@@ -5,6 +5,7 @@ using OpenTabletDriver.Plugin.Tablet;
 
 namespace XP_Pen.Wireless.Init.Fix;
 
+[PluginName(PLUGIN_NAME)]
 public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipelineElement<IDeviceReport>
 {
     #region Constants
@@ -16,6 +17,8 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
     #region Fields
 
     private bool _isInitialized = false;
+    private bool _shouldReport = false;
+    private bool _isOn = true;
 
     #endregion
 
@@ -30,7 +33,22 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
              "Vendor or Plug & Play Modes.\n" +
              "This value should be the same Base64 value as the one inside the configuration file.\n" +
              "Default value : ArAE")]
-    public string InitializationData { get; set; } = string.Empty;
+    public string InitializationData
+    {
+        get => Convert.ToBase64String(_initializationData);
+        set
+        {
+            try
+            {
+                _initializationData = Convert.FromBase64String(InitializationData);
+            }
+            catch
+            {
+                Log.Write(PLUGIN_NAME, $"Could not convert '{InitializationData}' to Base64", LogLevel.Error);
+                return;
+            }
+        }
+    }
 
     #endregion
 
@@ -42,30 +60,33 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
     #region Methods
 
-    public void Consume(IDeviceReport value)
-        => Emit?.Invoke(value);
-
-    public override void PostInitialize()
+    public void Consume(IDeviceReport report)
     {
-        if (!_isInitialized)
-        {
-            byte[] data;
 
-            try
-            {
-                data = Convert.FromBase64String(InitializationData);
-            }
-            catch
-            {
-                Log.Write(PLUGIN_NAME, $"Could not convert '{InitializationData}' to Base64", LogLevel.Error);
-                return;
-            }
+        if (report.Raw.Length > 3)
+            _shouldReport = HandleReport(report);
 
-            IntializeTablet(data);
+        if (_shouldReport)
+            Emit?.Invoke(report);
+    }
 
-            _isInitialized = true;
-        }
-    }    
+    private bool HandleReport(IDeviceReport report)
+    {
+        bool hasAuxBitSet = report.Raw[1].IsBitSet(4);
+        bool hasOfflineBitSet = report.Raw[1].IsBitSet(3);
+
+        bool oldState = _isOn;
+
+        if (hasAuxBitSet && hasOfflineBitSet && report.Raw[3] == 0x63)
+            _isOn = false;
+        else if (hasAuxBitSet && !hasOfflineBitSet)
+            _isOn = true;
+
+        if (_isOn != oldState && oldState == false && _isInitialized)
+            IntializeTablet(_initializationData);
+
+        return true;
+    }
 
     #endregion
 }
