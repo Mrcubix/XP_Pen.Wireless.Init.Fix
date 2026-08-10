@@ -50,6 +50,21 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
         }
     }
 
+    [BooleanProperty("Additional debugging info", ""),
+     DefaultPropertyValue(false),
+     ToolTip("XP-Pen Wireless Init Fix: \n\n" + 
+             "Additional debugging info in the Console tab.\n" + 
+             "Default value : false")]
+    public bool Debug { get; set; }
+
+    [BooleanProperty("Report debugging info", ""),
+     DefaultPropertyValue(false),
+     ToolTip("XP-Pen Wireless Init Fix: \n\n" + 
+             "Prints the raw reports to the Console tab.\n" + 
+             "This will cause some lag on even high-end devices.\n" +
+             "Default value : false")]
+    public bool ReportDebug { get; set; }
+
     #endregion
 
     #region Events
@@ -62,7 +77,6 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
     public void Consume(IDeviceReport report)
     {
-
         if (report.Raw.Length > 3)
             _shouldReport = HandleReport(report);
 
@@ -78,14 +92,31 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
         bool oldState = _isOn;
 
         if (hasAuxBitSet && hasOfflineBitSet && report.Raw[3] == 0x63)
+        {
             _isOn = false;
+            SendDebugLog("Device seems to have gone offline.");
+        }
         else if (hasAuxBitSet && !hasOfflineBitSet)
+        {
             _isOn = true;
+            SendDebugLog("Device seems to have come online.");
+        }
+
+        SendDebugLog($"Device is {(_isOn ? "ON" : "OFF")}");
+        
+        if (ReportDebug)
+            SendDebugLog($"Report: {BitConverter.ToString(report.Raw)}");
 
         if (_isOn != oldState && oldState == false && _isInitialized)
             IntializeTablet(_initializationData);
 
         return true;
+    }
+
+    private void SendDebugLog(string message)
+    {
+        if (Debug)
+            Log.Write(PLUGIN_NAME, message, LogLevel.Debug);
     }
 
     #endregion
