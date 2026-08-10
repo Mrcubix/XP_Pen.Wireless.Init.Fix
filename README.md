@@ -15,6 +15,13 @@ This works by checking for a specific set a data, indicating the tablet has swit
 Go the the Filter tab, a new Filter should have appeared.
 Click on it, and enable it, apply & / or save.
 
+## Dependencies (building)
+
+- .NET 8 SDK
+
+The above dependency is available in the Ubuntu backport package repo.
+Otherwise, refer to Microsoft's documentation for more information.
+
 ## Building
 
 Take a look at the content of the `build.sh` script.
