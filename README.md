@@ -1,7 +1,7 @@
 # XP-Pen Wireless Init Fix
 
-A plugin for OpenTabletDriver that attempts to fix nitialization issue caused by the wireless dongle, sometimes used with XP-Pen Deco LW, L & M models.
-This works by checking for a specific set a data, indicating the tablet has switched from the off state to the on state, and then sending the necessary output data to switch it between Plug & Play to Vendor Mode.
+A plugin for OpenTabletDriver that attempts to fix an initialization issue caused by the wireless dongle, sometimes used with XP-Pen Deco LW, L & M models.
+This works by checking for a specific set a data, indicating the tablet has switched from the OFF state to the ON state, and then sending the necessary output data to switch it between Plug & Play to Vendor Mode.
 
 ## Installation
 
