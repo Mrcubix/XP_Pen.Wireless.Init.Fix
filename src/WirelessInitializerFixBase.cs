@@ -112,6 +112,8 @@ public class WirelessInitializerFixBase
             Log.Write(PLUGIN_NAME, "Failed to get report stream", LogLevel.Error);
             return false;
         }
+
+        Log.Write(PLUGIN_NAME, $"Now handling '{_tablet.Properties.Name}'");
         
         return true;
     }
