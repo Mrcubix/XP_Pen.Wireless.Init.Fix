@@ -17,7 +17,6 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
     #region Fields
 
     private bool _shouldReport = false;
-    private bool _isOn = true;
 
     #endregion
 
@@ -86,28 +85,18 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
     private bool HandleReport(IDeviceReport report)
     {
         bool hasAuxBitSet = report.Raw[1].IsBitSet(4);
-        bool hasOfflineBitSet = report.Raw[1].IsBitSet(3);
+        bool hasOnlineBitSet = report.Raw[1].IsBitSet(3);
 
-        bool oldState = _isOn;
-
-        if (hasAuxBitSet && hasOfflineBitSet)
+        // The tablet does not send data while offline, but most of the time sends a report with 0xF8 in the second byte.
+        if (hasAuxBitSet && !hasOnlineBitSet)
         {
-            _isOn = false;
-            SendDebugLog("Device seems to have gone offline.");
-        }
-        else if (hasAuxBitSet && !hasOfflineBitSet)
-        {
-            _isOn = true;
             SendDebugLog("Device seems to have come online.");
+            IntializeTablet(_initializationData);
+            return false;
         }
-
-        SendDebugLog($"Device is {(_isOn ? "ON" : "OFF")}");
         
         if (ReportDebug)
             SendDebugLog($"Report: {BitConverter.ToString(report.Raw)}");
-
-        if (_isOn != oldState && oldState == false && _isInitialized)
-            IntializeTablet(_initializationData);
 
         return true;
     }
