@@ -14,7 +14,17 @@ public class WirelessInitializerFixBase
     private const string PLUGIN_NAME = "XP-Pen Wireless Init Fix";
     public const int SUPPORTED_VENDOR = 10429;
 
-    public static readonly int[] _supportedProducts = [ 2357, 2358 ];
+    public static readonly int[] _supportedProducts = 
+    [ 
+        2355, // Deco Pro SW
+        2356, // Deco Pro MW
+        2357, // Deco LW
+        2358, // Deco MW
+        2370, // Deco Pro MW Gen 2
+        2371, // Deco Pro LW Gen 2
+        2372, // Deco Pro XLW Gen 2
+        2377  // Deco Mini7W V2
+    ];
 
     #endregion
 
