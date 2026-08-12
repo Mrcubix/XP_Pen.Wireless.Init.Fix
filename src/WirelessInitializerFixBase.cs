@@ -123,11 +123,11 @@ public class WirelessInitializerFixBase
         try
         {
             _reportStream.Write(report);
-            Log.Debug("Device", "Set device output: " + BitConverter.ToString(report));
+            Log.Debug(PLUGIN_NAME, "Set device output: " + BitConverter.ToString(report));
         }
         catch
         {
-            Log.Write("Device", "Failed to set device output: " + BitConverter.ToString(report), LogLevel.Warning);
+            Log.Write(PLUGIN_NAME, "Failed to set device output: " + BitConverter.ToString(report), LogLevel.Warning);
         }
     }
 
