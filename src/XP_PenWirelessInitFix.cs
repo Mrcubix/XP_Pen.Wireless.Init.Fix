@@ -16,7 +16,6 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
     #region Fields
 
-    private bool _isInitialized = false;
     private bool _shouldReport = false;
     private bool _isOn = true;
 
@@ -24,7 +23,7 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
     #region Properties
 
-    public PipelinePosition Position => PipelinePosition.None;
+    public PipelinePosition Position => PipelinePosition.PreTransform;
 
     [Property("Initialization data"),
      DefaultPropertyValue("ArAE"),
@@ -77,7 +76,7 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
     public void Consume(IDeviceReport report)
     {
-        if (report.Raw.Length > 3)
+        if (_isInitialized && report.Raw.Length > 3)
             _shouldReport = HandleReport(report);
 
         if (_shouldReport)

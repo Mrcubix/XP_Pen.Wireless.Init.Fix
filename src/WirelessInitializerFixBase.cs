@@ -24,7 +24,7 @@ public class WirelessInitializerFixBase
     protected TabletReference _tablet = null!;
     protected Driver _driver = null!;
     protected byte[] _initializationData = [];
-    protected bool _isCompatible = false;
+    protected bool _isInitialized = false;
 
     #endregion
 
@@ -39,7 +39,7 @@ public class WirelessInitializerFixBase
             if (value is TabletReference tablet)
             {
                 _tablet = tablet;
-                _isCompatible = Initialize();
+                _isInitialized = Initialize();
                 PostInitialize();
             }
         }
