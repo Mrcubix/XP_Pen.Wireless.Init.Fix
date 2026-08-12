@@ -90,7 +90,7 @@ public class XP_PenWirelessInitFix : WirelessInitializerFixBase, IPositionedPipe
 
         bool oldState = _isOn;
 
-        if (hasAuxBitSet && hasOfflineBitSet && report.Raw[3] == 0x63)
+        if (hasAuxBitSet && hasOfflineBitSet)
         {
             _isOn = false;
             SendDebugLog("Device seems to have gone offline.");
